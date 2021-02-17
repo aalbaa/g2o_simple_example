@@ -27,8 +27,6 @@
 #include <iostream>
 #include <cmath>
 
-#include "simulator.h"
-
 #include "vertex_se2.h"
 #include "vertex_point_xy.h"
 #include "edge_se2.h"
