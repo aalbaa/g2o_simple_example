@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-
+project( g2o_tutorial)
 # Specify g2o's root directory (where it was cloned)
 set(G2O_ROOT /home/aalbaali/Documents/Code_base/External/cxx/g2o)
 list( APPEND CMAKE_MODULE_PATH ${G2O_ROOT}/cmake_modules )
@@ -16,9 +16,8 @@ include_directories(${G2O_ROOT})
 
 # Build library
 add_library(tutorial_slam2d_library ${G2O_LIB_TYPE}
-  edge_se2_pointxy.cpp  se2.h                vertex_point_xy.h
-  edge_se2.cpp    edge_se2_pointxy.h    vertex_se2.cpp
-  edge_se2.h      vertex_point_xy.cpp  vertex_se2.h
+  se2.h edge_se2.cpp    vertex_se2.cpp
+  edge_se2.h vertex_se2.h
   parameter_se2_offset.h parameter_se2_offset.cpp
   types_tutorial_slam2d.h types_tutorial_slam2d.cpp
   g2o_tutorial_slam2d_api.h
