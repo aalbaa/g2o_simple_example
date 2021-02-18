@@ -28,9 +28,7 @@
 #include <cmath>
 
 #include "vertex_se2.h"
-#include "vertex_point_xy.h"
 #include "edge_se2.h"
-#include "edge_se2_pointxy.h"
 #include "types_tutorial_slam2d.h"
 
 #include "g2o/core/sparse_optimizer.h"
@@ -46,9 +44,6 @@ using namespace g2o::tutorial;
 
 int main()
 {
-  // TODO simulate different sensor offset
-  // simulate a robot observing landmarks while travelling on a grid
-  SE2 sensorOffsetTransf(0.2, 0.1, -0.1);
   int numPoses = 10;
   int numLandmarks = 1;
   int numNodes = numPoses + numLandmarks;
@@ -68,12 +63,6 @@ int main()
     g2o::make_unique<SlamBlockSolver>(std::move(linearSolver)));
 
   optimizer.setAlgorithm(solver);
-
-  // add the parameter representing the sensor offset
-  ParameterSE2Offset* sensorOffset = new ParameterSE2Offset;
-  sensorOffset->setOffset(sensorOffsetTransf);
-  sensorOffset->setId(0);
-  optimizer.addParameter(sensorOffset);
 
   // adding the odometry to the optimizer
   // first adding all the vertices
@@ -97,30 +86,13 @@ int main()
     optimizer.addEdge(odometry);
   }
   cerr << "done." << endl;
-
-  // add the landmark observations
-  cerr << "Optimization: add landmark vertices ... ";
-  for (size_t i = 0; i < numLandmarks; ++i) {
-    // const Simulator::Landmark& l = simulator.landmarks()[i];
-    VertexPointXY* landmark = new VertexPointXY;
-    landmark->setId( numPoses + i + 1);
-    landmark->setEstimate( Eigen::Vector2d( 1.0, 1.0));
-    optimizer.addVertex( landmark);
-  }
-  cerr << "done." << endl;
-
-  cerr << "Optimization: add landmark observations ... ";
-  for (size_t i = 0; i < numPoses; ++i) {
-    EdgeSE2PointXY* landmarkObservation =  new EdgeSE2PointXY;
-    landmarkObservation->vertices()[0] = optimizer.vertex( i);
-    landmarkObservation->vertices()[1] = optimizer.vertex( numPoses + 1);
-    landmarkObservation->setMeasurement( Eigen::Vector2d( -1., 0));
-    landmarkObservation->setInformation( Eigen::Matrix2d::Identity());
-    landmarkObservation->setParameterId(0, sensorOffset->id());
-    optimizer.addEdge(landmarkObservation);
-  }
-  cerr << "done." << endl;
-
+  // Add loop closure edge
+  EdgeSE2* lc = new EdgeSE2;
+  lc->vertices()[0] = optimizer.vertex( 0);
+  lc->vertices()[1] = optimizer.vertex( numPoses - 1);
+  lc->setMeasurement( SE2( numPoses - 1 + 0.1, 0., 0.));
+  lc->setInformation( 0.1 * Eigen::Matrix3d::Identity());
+  optimizer.addEdge( lc);
 
   /*********************************************************************************
    * optimization

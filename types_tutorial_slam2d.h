@@ -29,9 +29,6 @@
 
 #include "vertex_se2.h"
 
-#include "parameter_se2_offset.h"
-
 #include "edge_se2.h"
-#include "edge_se2_pointxy.h"
 
 #endif
