@@ -21,7 +21,6 @@ add_library(tutorial_slam2d_library ${G2O_LIB_TYPE}
   edge_se2.h      vertex_point_xy.cpp  vertex_se2.h
   parameter_se2_offset.h parameter_se2_offset.cpp
   types_tutorial_slam2d.h types_tutorial_slam2d.cpp
-  simulator.h simulator.cpp
   g2o_tutorial_slam2d_api.h
 )
 
