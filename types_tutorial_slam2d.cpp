@@ -29,6 +29,7 @@
 #include "g2o/core/factory.h"
 #include "g2o/stuff/macros.h"
 
+
 #include <iostream>
 
 namespace g2o {
@@ -38,10 +39,10 @@ namespace g2o {
 
   G2O_REGISTER_TYPE(TUTORIAL_VERTEX_SE2, VertexSE2);
 
-  // G2O_REGISTER_TYPE(TUTORIAL_PARAMS_SE2_OFFSET, ParameterSE2Offset);
-
-  // G2O_REGISTER_TYPE(TUTORIAL_CACHE_SE2_OFFSET, CacheSE2Offset);
+  G2O_REGISTER_TYPE(TUTORIAL_VERTEX_R2, VertexR2);
 
   G2O_REGISTER_TYPE(TUTORIAL_EDGE_SE2, EdgeSE2);
+
+  G2O_REGISTER_TYPE(TUTORIAL_EDGE_R2, EdgeR2);
   }
 } // end namespace

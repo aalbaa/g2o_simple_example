@@ -24,13 +24,52 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef G2O_TYPES_TUTORIAL_SLAM2D_
-#define G2O_TYPES_TUTORIAL_SLAM2D_
-
-#include "vertex_se2.h"
-#include "vertex_R2.h"
-
-#include "edge_se2.h"
 #include "edge_R2.h"
 
-#endif
+using namespace Eigen;
+
+namespace g2o {
+  namespace tutorial {
+
+    EdgeR2::EdgeR2() :
+      BaseBinaryEdge<2, Vector2, VertexR2, VertexR2>()
+    {
+        // Set up the system matrices
+        A(0, 0) = 0;
+        A(0, 1) = 1;
+        A(1, 0) = -1;
+        A(1, 1) = -1;
+
+        B(0, 0) = 0;
+        B(0, 1) = 0;
+        B(1, 0) = 1;
+        B(1, 1) = 0;
+    }
+
+    bool EdgeR2::read(std::istream& is)
+    {
+      Vector2d p;
+      is >> p[0] >> p[1];
+      _measurement = p;
+      _inverseMeasurement = measurement().inverse();
+      for (int i = 0; i < 2; ++i)
+        for (int j = i; j < 2; ++j) {
+          is >> information()(i, j);
+          if (i != j)
+            information()(j, i) = information()(i, j);
+        }
+      return true;
+    }
+
+    bool EdgeR2::write(std::ostream& os) const
+    {
+      Vector2d p = measurement();
+      os << p[0] << " " << p[1];
+    //   os << p.x() << " " << p.y() << " " << p.z();
+      for (int i = 0; i < 2; ++i)
+        for (int j = i; j < 2; ++j)
+          os << " " << information()(i, j);
+      return os.good();
+    }
+  } // end namespace
+} // end namespace

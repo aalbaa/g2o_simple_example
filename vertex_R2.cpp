@@ -24,13 +24,34 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef G2O_TYPES_TUTORIAL_SLAM2D_
-#define G2O_TYPES_TUTORIAL_SLAM2D_
-
-#include "vertex_se2.h"
 #include "vertex_R2.h"
 
-#include "edge_se2.h"
-#include "edge_R2.h"
+namespace g2o {
+  namespace tutorial {
 
-#endif
+    VertexR2::VertexR2() :
+      BaseVertex<2, Vector2>()
+    {        
+    }
+
+    bool VertexR2::read(std::istream& is)
+    {
+      Eigen::Vector2d p;
+      is >> p[0] >> p[1];
+    //   _estimate.fromVector(p);
+      _estimate = p;
+      return true;
+    }
+
+    bool VertexR2::write(std::ostream& os) const
+    {
+    //   Eigen::Vector3d p = estimate().toVector();
+    //   os << p[0] << " " << p[1] << " " << p[2];
+    //   return os.good();
+
+      Eigen::Vector2d p = estimate();
+      os << p[0] << " " << p[1];
+      return os.good();
+    }
+  } // end namespace
+} // end namespace

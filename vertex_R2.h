@@ -24,13 +24,43 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef G2O_TYPES_TUTORIAL_SLAM2D_
-#define G2O_TYPES_TUTORIAL_SLAM2D_
+#ifndef G2O_TUTORIAL_VERTEX_R2_H
+#define G2O_TUTORIAL_VERTEX_R2_H
 
-#include "vertex_se2.h"
-#include "vertex_R2.h"
+#include "g2o/core/base_vertex.h"
+#include "g2o/core/hyper_graph_action.h"
+#include "g2o_tutorial_slam2d_api.h"
 
-#include "edge_se2.h"
-#include "edge_R2.h"
+namespace g2o {
+  namespace tutorial {
+
+    /**
+     * R^2 vertex
+     */
+    class G2O_TUTORIAL_SLAM2D_API VertexR2 : public BaseVertex<2, Vector2>
+    {
+      public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+        VertexR2();
+
+        virtual void setToOriginImpl() {
+        //   _estimate= Vector2::setZero();
+            _estimate = Vector2( 0., 0.);
+        }
+
+        virtual void oplusImpl(const double* update)
+        {
+          _estimate += Vector2( update[0], update[1]);
+          // SE2 up(update[0], update[1], update[2]);
+          // _estimate *= up;
+        }
+
+        virtual bool read(std::istream& is);
+        virtual bool write(std::ostream& os) const;
+
+    };
+
+  } // end namespace
+} // end namespace
 
 #endif

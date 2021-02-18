@@ -17,6 +17,7 @@ include_directories(${G2O_DIR})
 # Add library
 add_library(tutorial_slam2d_library ${G2O_LIB_TYPE}
   se2.h edge_se2.cpp    vertex_se2.cpp
+  vertex_R2.h vertex_R2.cpp edge_R2.h edge_R2.cpp
   edge_se2.h  vertex_se2.h
   types_tutorial_slam2d.h types_tutorial_slam2d.cpp
   g2o_tutorial_slam2d_api.h

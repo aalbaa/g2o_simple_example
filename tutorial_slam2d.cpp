@@ -28,7 +28,9 @@
 #include <cmath>
 
 #include "vertex_se2.h"
+#include "vertex_R2.h"
 #include "edge_se2.h"
+#include "edge_R2.h"
 #include "types_tutorial_slam2d.h"
 
 #include "g2o/core/sparse_optimizer.h"
@@ -68,9 +70,12 @@ int main()
   // first adding all the vertices
   cerr << "Optimization: Adding robot poses ... ";
   for (size_t i = 0; i < numPoses; ++i) {
-    VertexSE2* robot =  new VertexSE2;
+    // VertexSE2* robot =  new VertexSE2;
+    // robot->setId(i);
+    // robot->setEstimate( SE2(1., 0., 0.));
+    VertexR2* robot =  new VertexR2;
     robot->setId(i);
-    robot->setEstimate( SE2(1., 0., 0.));
+    robot->setEstimate( Vector2(0, 0));
     optimizer.addVertex(robot);
   }
   cerr << "done." << endl;
@@ -78,22 +83,30 @@ int main()
   // second add the odometry constraints
   cerr << "Optimization: Adding odometry measurements ... ";
   for (size_t i = 0; i < numPoses - 1; ++i) {
-    EdgeSE2* odometry = new EdgeSE2;
+    // EdgeSE2* odometry = new EdgeSE2;
+    EdgeR2* odometry = new EdgeR2;
     odometry->vertices()[0] = optimizer.vertex( i);
     odometry->vertices()[1] = optimizer.vertex( i + 1);
-    odometry->setMeasurement( SE2(1.0, 0., 0.));
-    odometry->setInformation( Eigen::Matrix3d::Identity());
+    // odometry->setMeasurement( SE2(1.0, 0., 0.));
+    odometry->setMeasurement( Vector2(1.0, 0.));
+    // odometry->setInformation( Eigen::Matrix3d::Identity());
+    odometry->setInformation( Eigen::Matrix2d::Identity());
     optimizer.addEdge(odometry);
   }
   cerr << "done." << endl;
+
+  cerr << "Adding loop closures....";
   // Add loop closure edge
-  EdgeSE2* lc = new EdgeSE2;
+  // EdgeSE2* lc = new EdgeSE2;
+  EdgeR2* lc = new EdgeR2;
   lc->vertices()[0] = optimizer.vertex( 0);
   lc->vertices()[1] = optimizer.vertex( numPoses - 1);
-  lc->setMeasurement( SE2( numPoses - 1 + 0.1, 0., 0.));
-  lc->setInformation( 0.1 * Eigen::Matrix3d::Identity());
+  // lc->setMeasurement( SE2( numPoses - 1 + 0.1, 0., 0.));
+  lc->setMeasurement( Vector2( numPoses - 1 + 0.1, 0.));
+  lc->setInformation( 0.1 * Eigen::Matrix2d::Identity());
   optimizer.addEdge( lc);
 
+  cerr << "done." << endl;
   /*********************************************************************************
    * optimization
    ********************************************************************************/
@@ -103,7 +116,8 @@ int main()
 
   // prepare and run the optimization
   // fix the first robot pose to account for gauge freedom
-  VertexSE2* firstRobotPose = dynamic_cast<VertexSE2*>(optimizer.vertex(0));
+  // VertexSE2* firstRobotPose = dynamic_cast<VertexSE2*>(optimizer.vertex(0));
+  VertexR2* firstRobotPose = dynamic_cast<VertexR2*>(optimizer.vertex(0));
   firstRobotPose->setFixed(true);
   optimizer.setVerbose(true);
 
